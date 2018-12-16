@@ -1,2 +1,33 @@
 
-<com.alibaba.dubbo.spring.boot.DubboAutoConfiguration>
+springboot-integration-master
+
+ContainerBase --
+ThreadPoolExecutor startStopExecutor;
+results.add(startStopExecutor.submit(new StartChild(children[i])));会启线程做初始化工作。
+
+StartChild "Tomcat-startStop-1"@4,242 in group "main": RUNNING
+StartChild "localhost-startStop-1"@4,208 in group "main": RUNNING
+
+ZkClientWrapper -- 会启线程创建ZkClient 对象  --"DubboZkclientConnector"@4,712 in group "main": RUNNING
+Thread connectThread = new Thread(listenableFutureTask);
+  connectThread.setName("DubboZkclientConnector");
+    listenableFutureTask = ListenableFutureTask.create(new Callable<ZkClient>() {
+            @Override
+            public ZkClient call() throws Exception {
+                return new ZkClient(serverAddr, Integer.MAX_VALUE);
+            }
+        });
+   client = listenableFutureTask.get(timeout, TimeUnit.MILLISECONDS); 获取线程的返回值， 一个zk客户端。
+
+ZkClient -- 又启线程。处理zk事件。
+_eventThread = new ZkEventThread(_connection.getServers());
+connect方法 创建zk对象。
+
+ClientCnxn --又启两个 线程。
+
+"DubboZkclientConnector-SendThread()"@4,811 in group "main": RUNNING
+SendThread run 方法特别长、
+
+"DubboZkclientConnector-EventThread"@4,823 in group "main": RUNNING
+
+
